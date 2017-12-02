@@ -90,15 +90,15 @@
 
                 <div style="text-align:left; color:#ccc; margin: 0 auto;">
                   <span class="material-icons" style="margin-right:10px;">done</span>
-                  <strong>ORDER BY</strong> Oct. <span id="prevOrderDate">11</span> | <strong>DELIVERED</strong> Oct. 17-18</div>
+                  <strong>ORDER BY</strong> Nov. <span id="prevOrderDate">29</span> | <strong>DELIVERED</strong> Dec. 5-6</div>
 
                 <div style="text-align:left; margin: 0 auto;">
                   <span class="material-icons" style="margin-right:10px;">schedule </span>
-                  <strong>ORDER BY</strong> Oct. 18 | <strong>DELIVERED</strong> Oct. 24-25</div>
+                  <strong>ORDER BY</strong> Dec. 6 | <strong>DELIVERED</strong> Dec. 12-13</div>
 
                 <div style="text-align:left; color:#ccc; margin: 0 auto;">
                   <span class="material-icons" style="margin-right:10px;">schedule </span>
-                  <strong>ORDER BY</strong> Oct. 25 | <strong>DELIVERED</strong> Oct. 31-Nov.1</div>
+                  <strong>ORDER BY</strong> Dec. 6 | <strong>DELIVERED</strong> Dec. 12-13</div>
                 <br/>
 
               </div>
@@ -405,18 +405,23 @@ id="foods-you-can-eat">
         $.ajax({
           url: 'https://hooks.zapier.com/hooks/catch/2280294/5t01dr/?shopify_customer_id={{customer.id}}',
           type: 'get',
-          success: function(){
+          beforeSend: function(){
+          $('#skip').hide();
+          $('#skip-wrapper').append('<div class="loader">Loading...</div>');
+        },
+               success: function(){
           //             $('#skip').addClass('skip__success');
           setTimeout(function(){
-          $('#skip-wrapper').fadeOut(1000, function() {
-          $('#skip-wrapper a').removeClass('skip__success')
-          $('#skipped-wrapper').fadeIn(750);
-        });
-      }, 1000);
-      }
-      });      	
+            $('#skip-wrapper').fadeOut(1000, function() {
+              $('.loader').remove();
+              $('#skip').show();
+              $('#skip-wrapper a').removeClass('skip__success');
+              $('#skipped-wrapper').fadeIn(750);
+            });
+          }, 2000);
+        }
+      });       
       });
-
       $('#skipped').on('click', function() {
         $(this).prop("disabled",true);
         $.ajax({
@@ -425,15 +430,15 @@ id="foods-you-can-eat">
           success: function(){
             $('#skipped').addClass('skip__success');
             setTimeout(function(){
-                $('#skipped-wrapper').fadeOut(1000, function() {
-                  $('#skipped-wrapper a').removeClass('skip__success')
-                  $('#skip-wrapper').fadeIn(750);
-                  });
-            	}, 1000);
-      		}
-      	});      	
+            $('#skipped-wrapper').fadeOut(1000, function() {
+            $('#skipped-wrapper a').removeClass('skip__success')
+            $('#skip-wrapper').fadeIn(750);
+              });
+            }, 1000);
+          }
+        });       
       });       
-    </script>
+    </script>    
 
     <script>
       $("input[name='dietary-preference']").change( function(){

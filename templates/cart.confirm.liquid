@@ -7,7 +7,7 @@
       <h1>Review Your Order</h1>
     </div>
     {% assign items = cart.items %}
-    {% assign alacarte_items = 0%}
+    {% assign alacarte_items = 0 %}
     {% assign box_meals = 0 %}
     {% for item in items %}
     	{% assign product = item.product %}
@@ -146,29 +146,52 @@
         </div>
         <div id="cart-total" class="grid__item two-eighths">
           {{ cart.total_price | money }}
-        </div>    
-<!--       
+        </div>
+      
       {% unless customer.tags contains 'Active Subscriber' %}
       <div class="text-center rte">
         <p style="margin: 0;"><em><strong>Please note:</strong> Placing an order will activate your weekly subscription. You'll be charged a minimum of $49.99 per week.</em></p>
       </div>
-      {% endunless %} -->
+      {% endunless %}
+
+      {% comment %} Days since last order notification {% endcomment %} 
+      {% capture day %}{{ 'now' | date: '%A' }}{% endcapture %}
+      {% if day =='Monday' or day == 'Tuesday' or day == 'Wednesday' %}
+        {% assign lastOrder = customer.last_order.created_at | date: '%s' %}
+        {% assign nowTimestamp = 'now' | date: '%s' %}
+        {% assign diffSeconds = nowTimestamp | minus: lastOrder %}
+        {% assign diffDays = diffSeconds | divided_by: 3600 | divided_by: 24 %}
+        {% if diffDays <= 3 %}
+      <div class="grid__item one-whole">
+        <p style="margin: 0;" class="alert"><em><strong>Please note: It looks like you placed an order {{ diffDays }} {% if diffDays == 1 %}day {% else %}days{% endif %} ago. Please double-check and confirm you'd like to order again for delivery next week. Thank you!</strong></em></p>
+      </div>
+        {% endif %}
+      {% elsif day =='Sunday' %}
+        {% assign lastOrder = customer.last_order.created_at | date: '%s' %}
+        {% assign nowTimestamp = 'now' | date: '%s' %}
+        {% assign diffSeconds = nowTimestamp | minus: lastOrder %}
+        {% assign diffDays = diffSeconds | divided_by: 3600 | divided_by: 24 %}
+        {% if diffDays <= 1 %}
+      <div class="grid__item one-whole">
+        <p style="margin: 0;"><em><strong>Please note:</strong> It looks like you've already placed an order this week. Please double-check and confirm you'd like to order again for delivery next week. Thank you!</em></p>
+      </div>
+        {% endif %}
+      {% endif %}      
       
       {% capture day %}{{ 'now' | date: '%A' }}{% endcapture %}
-      {% if day == 'Sunday' or day =='Monday' or day == 'Tuesday' or day == 'Wednesday' or day == 'Friday' %}
+      {% if day == 'Sunday' or day =='Monday' or day == 'Tuesday' or day == 'Wednesday' %}
         {% assign total_before_cooler = cart.original_total_price | minus: cooler_total %}
         {% if total_before_cooler < 4999 %}
-        <div class="grid__item one-whole">        
-          <p>Your cart does not meet the minimum order requirement of <strong>$49.99</strong>. Please <a href="/pages/menu">add to your order</a> to meet the minimum order amount.</p>
-        </div>
+          <div class="grid__item one-whole">
+            <p>Your cart does not meet the minimum order requirement of <strong>$49.99</strong>. Please <a href="/pages/menu">add to your order</a> to meet the minimum order amount.</p>
+          </div>
         {% else %}
-      <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/>
+          <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/>
         {% endif %}
       {% else %}
         <div class="grid__item one-whole">
-          <p><strong>We're cooking now, check back Sunday</strong></p>
+          <p><strong>We're cooking now, please check back Sunday morning to place your order.</strong></p>
         </div>
-      <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/>
       {% endif %}
       
       </div>
