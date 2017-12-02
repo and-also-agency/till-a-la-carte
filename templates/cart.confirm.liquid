@@ -1,0 +1,344 @@
+<div class="page-width" data-section-id="{{ section.id }}" data-section-type="cart-template">
+
+  <form id='order-confirmation' action="pages/thank-you" method="get">
+    
+    
+    <div class="text-center">
+      <h1>Review Your Order</h1>
+    </div>
+    <div class="order-review grid__item medium-up--five-eighths">
+    <div class="group-wrapper">
+      <h2>Your Tillivery Box</h2>
+      <div class="clearfix">
+      {% assign items = cart.items | sort: 'price' | reverse %}
+      {% assign box_total = 0 %}
+      {% for item in items %}
+        {% assign product = item.product %}
+        {% assign variant = item.variant %}
+        {% if product.type == 'Entree' or product.type == 'Soup' or product.type == 'Salad' or product.type == 'Bread'%}
+        {% assign line_total = item.price | times: item.quantity %}
+        {% assign box_total = box_total | plus: line_total %}
+        <div class="confirm-product grid__item one-half">          
+          <div class="img-container" style="background: url({{ product | img_url: '300x300' }}) center center / cover;"></div>
+          <p>
+            {{ product.title }}
+            {% if product.type == 'Entree'%}
+            <strong>({{ item.quantity | times: 2 }} portions)</strong>
+            {% elsif product.type == 'Soup' or product.type == 'Salad' %}
+            <strong>({{ item.quantity | times: 4 }} portions)</strong>
+            {% else %}
+            <strong>({{ item.quantity}} {% if item.quantity == 1 %}loaf{% else %}loaves{% endif %})</strong>
+            {% endif %}
+          </p>
+        </div>
+        <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
+        {% capture product_count %}{% cycle '1', '2' %}{% endcapture %}
+        {% if product_count == '2' or forloop.last %}
+        <div class="clearfix"></div>
+        {% endif %}
+        {% endif %}
+      {% endfor %}
+        {% if box_total < 4999 %}
+        <p class="cart-confirm-errors" style="text-align:center;">Please remember, the minimum Tillivery Box is $49.99. If you haven't ordered a full box by Thursday, we'll complete your box for you with Chef's Choice items.</p>
+        {% endif %}
+    </div>
+    </div>
+    <div class="group-wrapper">
+      <h2>Your Addons</h2>
+      <div class="clearfix">
+      {% assign items = cart.items | sort: 'price' | reverse %}
+      {% assign addon_total = 0 %}
+      {% for item in items %}
+        {% assign product = item.product %}
+        {% assign variant = item.variant %}
+        {% if product.type == 'Add-On' %}
+		{% assign line_total = item.price | times: item.quantity %}
+        {% assign addon_total = addon_total | plus: line_total %}
+        <div class="confirm-product grid__item one-half">  
+          <div class="img-container" style="background: url({{ product | img_url: '300x300' }}) center center / cover;"></div>
+          <p>{{ product.title }} <strong>({{ item.quantity }})</strong></p>
+        </div>
+        <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
+        {% capture addon_count %}{% cycle '1', '2' %}{% endcapture %}
+        {% if addon_count == '2' or forloop.last %}
+        <div class="clearfix"></div>
+        {% endif %}
+        {% endif %}
+      {% endfor %}
+        {% if addon_total == 0 %}
+        <div class="text-center">
+          <p>Looks like you don't have any addons. Check out our desserts, appetizers, and fresh juices, they're all delicious!</p>
+          <a href="/collections/add-ons" class="btn">Browse Addons</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+      {% assign cooler_total = 0 %}
+      {% for item in cart.items %}
+      {% assign product = item.product %}
+      {% assign variant = item.variant %}
+      {% if product.type == 'Operational' %}
+      {% assign line_total = item.price | times: item.quantity %}
+      {% assign cooler_total = cooler_total | plus: line_total %}
+      <div class="group-wrapper">
+        <h2>One Time Cooler Deposit</h2>
+        <div class="clearfix">      
+          <div class="confirm-product grid__item one-half medium-up--push-one-quarter">  
+            <div class="img-container" style="background: url({{ product | img_url: '300x300' }}) center center / cover;"></div>
+            <p>{{ product.title }}</p>
+            <p>{{ product.description }}</p>
+          </div>
+          <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
+        </div>
+      </div>           
+      {% endif %}
+      {% endfor %}      
+    </div>
+    
+    <div class="complete-order grid__item medium-up--three-eighths">
+      <div class="order-summary clearfix">
+        <div class="grid__item six-eighths">
+          Box
+        </div>
+        <div class="grid__item two-eighths">
+          {{ box_total | money }}  
+        </div>
+        <div class="grid__item six-eighths">
+          Add-Ons
+        </div>
+        <div class="grid__item two-eighths">
+          {{ addon_total | money }}
+        </div> 
+        {% if cooler_total != 0 %}
+        <div class="grid__item six-eighths">
+          Refundable Cooler Deposit
+        </div>
+        <div class="grid__item two-eighths">
+          {{ cooler_total | money }}
+        </div>  
+        {% endif %}
+        <div class="grid__item six-eighths">
+          Delivery
+        </div>
+        <div class="grid__item two-eighths">
+          Free!
+        </div>
+        
+        <div>
+          <div class="grid__item five-eighths">
+            <input id='coupon-code' placeholder="Coupon Code" autocomplete="off" size="30" type="text">
+          </div>
+          <div class="grid__item three-eighths" style="height:72px;">
+            <div class="btn btn-coupon" onclick="validateCouponCode();">
+              Apply
+            </div>
+          </div>
+        </div>
+        
+        
+        <div id='coupon-code-message' class="grid__item eight-eighths" style="display: none;">
+          MESSAGE TEXT
+        </div>
+        
+        <div id='discount-block' style="display: none;">
+          <div id='discount-code' class="grid__item six-eighths">
+            Discount
+          </div>
+          <div id='discount-dollars' class="grid__item two-eighths">
+            $0.00
+          </div>  
+        </div>
+        
+        <div class="grid__item six-eighths">
+          Order Total
+        </div>
+        <div id="cart-total" class="grid__item two-eighths">
+          {{ cart.total_price | money }}
+        </div>   
+        
+      {% comment %} New customer notification {% endcomment %} 
+      {% unless customer.tags contains 'Active Subscriber' %}
+      <div class="text-center rte">
+        <p style="margin: 0;"><em><strong>Please note:</strong> Placing an order will activate your weekly subscription. You'll be charged a minimum of $49.99 per week.</em></p>
+      </div>
+      {% endunless %}
+        
+      {% comment %} Days since last order notification {% endcomment %} 
+      {% capture day %}{{ 'now' | date: '%A' }}{% endcapture %}
+      {% if day =='Monday' or day == 'Tuesday' or day == 'Wednesday' %}
+        {% assign lastOrder = customer.last_order.created_at | date: '%s' %}
+        {% assign nowTimestamp = 'now' | date: '%s' %}
+        {% assign diffSeconds = nowTimestamp | minus: lastOrder %}
+        {% assign diffDays = diffSeconds | divided_by: 3600 | divided_by: 24 %}
+        {% if diffDays <= 3 %}
+      <div class="text-center rte">
+        <p style="margin: 0;" class="alert"><em><strong>Please note: It looks like you placed an order {{ diffDays }} {% if diffDays == 1 %}day {% else %}days{% endif %} ago. Please double-check and confirm you'd like to order again for delivery next week. Thank you!</strong></em></p>
+      </div>
+        {% endif %}
+      {% elsif day =='Sunday' %}
+        {% assign lastOrder = customer.last_order.created_at | date: '%s' %}
+        {% assign nowTimestamp = 'now' | date: '%s' %}
+        {% assign diffSeconds = nowTimestamp | minus: lastOrder %}
+        {% assign diffDays = diffSeconds | divided_by: 3600 | divided_by: 24 %}
+        {% if diffDays <= 1 %}
+      <div class="text-center rte">
+        <p style="margin: 0;"><em><strong>Please note:</strong> It looks like you've already placed an order this week. Please double-check and confirm you'd like to order again for delivery next week. Thank you!</em></p>
+      </div>
+        {% endif %}
+      {% endif %}
+        
+      {% comment %} Place order button visibility {% endcomment %}  
+      {% capture day %}{{ 'now' | date: '%A' }}{% endcapture %}
+      {% if day == 'Sunday' or day =='Monday' or day == 'Tuesday' or day == 'Wednesday' %}
+      <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/>
+      {% else %}
+      <p><strong>We're cooking now, please check back Sunday</strong></p>
+<!--       <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/> -->
+      {% endif %}
+      
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  
+  function clearCart () {
+    $.ajax({
+      type: "POST",
+      url: '/cart/clear.js',
+      success: function(){
+        // Success
+      }
+    });
+  };
+  
+  function submitOrder (form) {
+    
+    var customer = {"id": {{ customer.id }}};
+    var lineitems = []
+    for (i = 0; i < form.length ; i++) {
+      var element = form.elements[i]
+      if (element.getAttribute('data-selector') == 'variant') {
+        var variant_id = element.name;
+        var quantity = element.value;
+        lineitems.push({"variant_id": variant_id, "quantity": quantity});
+      };
+    };
+    
+    var data = {};  	  
+    
+    data["customer"] = customer;
+    data["order_total"] = {{ cart.total_price }};
+    data["line_items"] = lineitems;
+  	data["use_customer_default_address"] = "true"
+  
+    if (typeof discount_code !== 'undefined') {
+      	data["total_discounts"] = total_discounts;  
+      	var discount_codes = [];
+        discount_codes.push(discount_code);
+    	data["discount_codes"] = discount_codes;  
+    }
+    
+    console.log(data);
+    
+    $.ajax({
+      url: 'https://hooks.zapier.com/hooks/catch/2280294/9sh2v2/',
+      type: 'post',
+      data: JSON.stringify(data),
+      success: function(){
+        clearCart(form);
+        form.submit();
+      }
+    });
+  };
+  
+  var form = document.getElementById('order-confirmation');
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    $('#confirm-order').attr("disabled", "disabled");
+	submitOrder(form);
+  });
+  
+  function setCouponCode(response) {
+  	console.log(response);
+    var cart_total_value = {{ cart.total_price }};
+    var couponCodeMessage = document.getElementById('coupon-code-message');
+    var discountBlock = document.getElementById('discount-block');
+    var discountCode = document.getElementById('discount-code');
+    var discountDollars = document.getElementById('discount-dollars');
+    var cartTotal = document.getElementById('cart-total');      
+    
+    if (response.status == 'Success') {
+      
+      // Hide Error Message
+      couponCodeMessage.style.display = 'none';
+      
+      // Figure out the Dollar Value if Percentage Discount
+      var discount_value = response.value;
+      
+      if (response.value_type == 'percentage') {
+        var discount_percent = parseFloat(discount_value) / 100;
+        var discount_value = cart_total_value * discount_percent;
+      }      
+      else {
+        var discount_value = parseFloat(discount_value) * 100;
+      }
+      
+	  var discount_dollars = (discount_value/100).toLocaleString("en-US", {style: "currency", currency: "USD", minimumFractionDigits: 2});
+
+      // Update and Show the Success Block
+      discountCode.textContent = 'Code: ' + response.code;
+      discountDollars.textContent = discount_dollars;
+      discountBlock.style.display = ''; 
+      
+      // Update Cart Total
+      cartTotal.textContent = ((cart_total_value + discount_value) / 100).toLocaleString("en-US", {style: "currency", currency: "USD", minimumFractionDigits: 2});
+    }
+    else {
+      couponCodeMessage.textContent = response.message;
+      couponCodeMessage.style.display = '';
+    }
+    
+    discount_code = {};
+    discount_code["amount"] = (Math.abs(response.value * 100)/100).toFixed(2);
+	discount_code["code"] = response.code;
+	discount_code["type"]= response.value_type;
+    
+    total_discounts = (Math.abs(discount_value)/100).toFixed(2);
+  };
+  
+  function validateCouponCode () {
+    
+    var shopify_customer_id = {{customer.id}};
+    var code = document.getElementById('coupon-code').value;
+    
+    couponCodeMessage = document.getElementById('coupon-code-message');
+    couponCodeMessage.style.display = 'none';
+    
+    $.ajax({
+      url: 'https://subscribery.herokuapp.com/api/coupon/' + shopify_customer_id + '/' + code,
+      type: 'get',
+      success: function(response){
+        setCouponCode(response);
+      },
+      error: function(xhr, ajaxOptions, thrownError){
+      	var message = thrownError;
+        if(xhr.status==404) {          
+          if (code === 'undefined' | !code) {
+            var message = 'Please enter a coupon code';
+          }
+        }
+        if(xhr.status==500) {
+          var message = "Oops, something went wrong.<br/> Please contact customer service."
+        }
+        couponCodeMessage.innerHTML = message;
+		couponCodeMessage.style.display = '';
+      }
+    });
+    
+  };
+  
+
+</script>
