@@ -50,8 +50,8 @@
     document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
   </script>
   
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  {{ 'vex.combined.min.js' | asset_url | script_tag }}
+<!--   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
   <!--[if (lte IE 9) ]>{{ 'match-media.min.js' | asset_url | script_tag }}<![endif]-->
 
@@ -69,7 +69,8 @@
 
   {{ content_for_header }}
 
-  {{ 'custom-css-shopify.css' | asset_url | stylesheet_tag }}
+<!--   {{ 'custom-css-shopify.css' | asset_url | stylesheet_tag }} -->
+  {{ 'custom.scss.css' | asset_url | stylesheet_tag }}
   {% include 'scm-attribute-head' %}
   
   <!-- Begin Stripe Elements -->
@@ -107,6 +108,15 @@
   </div>
 
   {% section 'header' %}
+  
+  {% if collection.handle contains 'a-la-carte' or collection.handle contains 'bakery' or collection.handle contains 'roost' or page.url contains 'menu-box-meals' %}
+  <div class="added-notification">
+    <span class="added-product"></span> <span>was added to your order.</span>
+  </div>
+  <div class="error-notification">
+    <span>You must <a href="/account/login">log in</a> to order. Don't have an account? <a href="/pages/signup">Sign Up</a></span>
+  </div>  
+  {% endif %}
 
   <div class="page-container" id="PageContainer">
 
@@ -119,5 +129,6 @@
   </div>
             
 <!-- {% include 'subscription-theme-footer' %} -->
+  
 </body>
 </html>

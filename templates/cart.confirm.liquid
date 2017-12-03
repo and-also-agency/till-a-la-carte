@@ -6,73 +6,71 @@
     <div class="text-center">
       <h1>Review Your Order</h1>
     </div>
+    {% assign items = cart.items %}
+    {% assign alacarte_items = 0 %}
+    {% assign box_meals = 0 %}
+    {% for item in items %}
+    	{% assign product = item.product %}
+    	{% if product.type == 'Box Meal' %}
+    		{% assign box_meals = box_meals | plus: 1 %}
+    	{% else %}
+    		{% assign alacarte_items = alacarte_items | plus: 1 %}
+    	{% endif %}
+    {% endfor %}
+    
     <div class="order-review grid__item medium-up--five-eighths">
-    <div class="group-wrapper">
-      <h2>Your Tillivery Box</h2>
-      <div class="clearfix">
-      {% assign items = cart.items | sort: 'price' | reverse %}
-      {% assign box_total = 0 %}
-      {% for item in items %}
-        {% assign product = item.product %}
-        {% assign variant = item.variant %}
-        {% if product.type == 'Entree' or product.type == 'Soup' or product.type == 'Salad' or product.type == 'Bread'%}
-        {% assign line_total = item.price | times: item.quantity %}
-        {% assign box_total = box_total | plus: line_total %}
-        <div class="confirm-product grid__item one-half">          
-          <div class="img-container" style="background: url({{ product | img_url: '300x300' }}) center center / cover;"></div>
-          <p>
-            {{ product.title }}
-            {% if product.type == 'Entree'%}
-            <strong>({{ item.quantity | times: 2 }} portions)</strong>
-            {% elsif product.type == 'Soup' or product.type == 'Salad' %}
-            <strong>({{ item.quantity | times: 4 }} portions)</strong>
-            {% else %}
-            <strong>({{ item.quantity}} {% if item.quantity == 1 %}loaf{% else %}loaves{% endif %})</strong>
-            {% endif %}
-          </p>
+      
+      {% if box_meals > 0 %}
+      <div class="group-wrapper">
+        <h2>Your Box Meal</h2>
+        <div class="clearfix">
+          {% assign box_total = 0 %}
+          {% for item in items %}
+          {% assign product = item.product %}
+          {% assign variant = item.variant %}
+          {% if product.type == 'Box Meal' %}
+          {% assign line_total = item.price | times: item.quantity %}
+          {% assign box_total = box_total | plus: line_total %}
+          <div class="confirm-product grid__item one-whole">          
+            <div class="box-img-container" style="background: url({{ product | img_url: '700x700' }}) center center / cover;"></div>
+            <p>
+              {{ product.title }} - 
+              <strong>{{ item.quantity }}</strong>
+            </p>
+          </div>
+          <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
+          {% endif %}
+          {% endfor %}
         </div>
-        <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
-        {% capture product_count %}{% cycle '1', '2' %}{% endcapture %}
-        {% if product_count == '2' or forloop.last %}
-        <div class="clearfix"></div>
-        {% endif %}
-        {% endif %}
-      {% endfor %}
-        {% if box_total < 4999 %}
-        <p class="cart-confirm-errors" style="text-align:center;">Please remember, the minimum Tillivery Box is $49.99. If you haven't ordered a full box by Thursday, we'll complete your box for you with Chef's Choice items.</p>
-        {% endif %}
-    </div>
-    </div>
-    <div class="group-wrapper">
-      <h2>Your Addons</h2>
-      <div class="clearfix">
-      {% assign items = cart.items | sort: 'price' | reverse %}
-      {% assign addon_total = 0 %}
-      {% for item in items %}
-        {% assign product = item.product %}
-        {% assign variant = item.variant %}
-        {% if product.type == 'Add-On' %}
-		{% assign line_total = item.price | times: item.quantity %}
-        {% assign addon_total = addon_total | plus: line_total %}
-        <div class="confirm-product grid__item one-half">  
-          <div class="img-container" style="background: url({{ product | img_url: '300x300' }}) center center / cover;"></div>
-          <p>{{ product.title }} <strong>({{ item.quantity }})</strong></p>
-        </div>
-        <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
-        {% capture addon_count %}{% cycle '1', '2' %}{% endcapture %}
-        {% if addon_count == '2' or forloop.last %}
-        <div class="clearfix"></div>
-        {% endif %}
-        {% endif %}
-      {% endfor %}
-        {% if addon_total == 0 %}
-        <div class="text-center">
-          <p>Looks like you don't have any addons. Check out our desserts, appetizers, and fresh juices, they're all delicious!</p>
-          <a href="/collections/add-ons" class="btn">Browse Addons</a>
-        </div>
-        {% endif %}
       </div>
-    </div>
+      {% endif %}
+      
+      {% if alacarte_items > 0 %}
+      <div class="group-wrapper">
+        <h2>A La Carte Items</h2>
+        <div class="flex-row clearfix">
+          {% assign box_total = 0 %}
+          {% for item in items %}
+          {% assign product = item.product %}
+          {% assign variant = item.variant %}
+          {% if product.type == "Box Meal" or product.type == "Operational" %}
+          {% else %}
+          {% assign line_total = item.price | times: item.quantity %}
+          {% assign box_total = box_total | plus: line_total %}
+          <div class="confirm-product flex-col flex-col--50">          
+            <div class="img-container" style="background: url({{ product | img_url: '300x300' }}) center center / cover;"></div>
+            <p>
+              {{ product.title }} - 
+              <strong>{{ item.quantity }}</strong>
+            </p>
+          </div>
+          <input type="hidden" data-selector="variant" name="{{variant.id}}" value="{{item.quantity}}"/>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
       {% assign cooler_total = 0 %}
       {% for item in cart.items %}
       {% assign product = item.product %}
@@ -98,16 +96,10 @@
     <div class="complete-order grid__item medium-up--three-eighths">
       <div class="order-summary clearfix">
         <div class="grid__item six-eighths">
-          Box
+          Subtotal
         </div>
         <div class="grid__item two-eighths">
-          {{ box_total | money }}  
-        </div>
-        <div class="grid__item six-eighths">
-          Add-Ons
-        </div>
-        <div class="grid__item two-eighths">
-          {{ addon_total | money }}
+          {{ cart.original_total_price | minus: cooler_total | money }} 
         </div> 
         {% if cooler_total != 0 %}
         <div class="grid__item six-eighths">
@@ -154,15 +146,14 @@
         </div>
         <div id="cart-total" class="grid__item two-eighths">
           {{ cart.total_price | money }}
-        </div>   
-        
-      {% comment %} New customer notification {% endcomment %} 
+        </div>
+      
       {% unless customer.tags contains 'Active Subscriber' %}
       <div class="text-center rte">
         <p style="margin: 0;"><em><strong>Please note:</strong> Placing an order will activate your weekly subscription. You'll be charged a minimum of $49.99 per week.</em></p>
       </div>
       {% endunless %}
-        
+
       {% comment %} Days since last order notification {% endcomment %} 
       {% capture day %}{{ 'now' | date: '%A' }}{% endcapture %}
       {% if day =='Monday' or day == 'Tuesday' or day == 'Wednesday' %}
@@ -171,7 +162,7 @@
         {% assign diffSeconds = nowTimestamp | minus: lastOrder %}
         {% assign diffDays = diffSeconds | divided_by: 3600 | divided_by: 24 %}
         {% if diffDays <= 3 %}
-      <div class="text-center rte">
+      <div class="grid__item one-whole">
         <p style="margin: 0;" class="alert"><em><strong>Please note: It looks like you placed an order {{ diffDays }} {% if diffDays == 1 %}day {% else %}days{% endif %} ago. Please double-check and confirm you'd like to order again for delivery next week. Thank you!</strong></em></p>
       </div>
         {% endif %}
@@ -181,19 +172,26 @@
         {% assign diffSeconds = nowTimestamp | minus: lastOrder %}
         {% assign diffDays = diffSeconds | divided_by: 3600 | divided_by: 24 %}
         {% if diffDays <= 1 %}
-      <div class="text-center rte">
+      <div class="grid__item one-whole">
         <p style="margin: 0;"><em><strong>Please note:</strong> It looks like you've already placed an order this week. Please double-check and confirm you'd like to order again for delivery next week. Thank you!</em></p>
       </div>
         {% endif %}
-      {% endif %}
-        
-      {% comment %} Place order button visibility {% endcomment %}  
+      {% endif %}      
+      
       {% capture day %}{{ 'now' | date: '%A' }}{% endcapture %}
       {% if day == 'Sunday' or day =='Monday' or day == 'Tuesday' or day == 'Wednesday' %}
-      <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/>
+        {% assign total_before_cooler = cart.original_total_price | minus: cooler_total %}
+        {% if total_before_cooler < 4999 %}
+          <div class="grid__item one-whole">
+            <p>Your cart does not meet the minimum order requirement of <strong>$49.99</strong>. Please <a href="/pages/menu">add to your order</a> to meet the minimum order amount.</p>
+          </div>
+        {% else %}
+          <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/>
+        {% endif %}
       {% else %}
-      <p><strong>We're cooking now, please check back Sunday</strong></p>
-<!--       <input id="confirm-order" type="submit" class="btn cart__continue-btn btn-confirm" value="Place My Order"/> -->
+        <div class="grid__item one-whole">
+          <p><strong>We're cooking now, please check back Sunday morning to place your order.</strong></p>
+        </div>
       {% endif %}
       
       </div>

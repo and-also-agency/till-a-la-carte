@@ -1,7 +1,7 @@
 <script>
-{% for o in customer.draft_orders %}
-	console.log(o.id);
-{% endfor %}
+  {% for o in customer.draft_orders %}
+  console.log(o.id);
+  {% endfor %}
 </script>
 
 {% if customer.metafields.subscriptions.customer_string %}
@@ -45,7 +45,7 @@
           <li class="sky-tab-content-1">					
             <div class="typography">
               <h2>MY ACCOUNT</h2>
-           	  <h3>Welcome Back to TILLIVERY!</h3> <br>
+              <h3>Welcome Back to TILLIVERY!</h3> <br>
 
               {% if customer.metafields.customer_attribute['stripe-customer'] == blank %}
               <div class="payment-alert">
@@ -58,8 +58,8 @@
 
                 We want to deliver joy to your family each week by making busy weeknight dinners easier and more delicious. To get started, just click the button below to customize next week’s meal delivery. If you are not able to place your order by Wednesday at midnight, it’s no problem. We will send you the Chef’s Choice meal for the week.
                 <br/><br/>
-                
-                
+
+
                 {% if customer.tags contains 'Skip' %}
                 <div id="skipped-wrapper">
                   <p>Looks like you've decided to skip your TILLIVERY this week. If you'd like to receive a TILLIVERY this week, cancel the skip.</p>
@@ -98,7 +98,7 @@
 
                 <div style="text-align:left; color:#ccc; margin: 0 auto;">
                   <span class="material-icons" style="margin-right:10px;">schedule </span>
-                  <strong>ORDER BY</strong> Dec. 13 | <strong>DELIVERED</strong> Dec. 19-20</div>
+                  <strong>ORDER BY</strong> Dec. 6 | <strong>DELIVERED</strong> Dec. 12-13</div>
                 <br/>
 
               </div>
@@ -180,7 +180,7 @@
 
                 <br/><br/>
 
-                <div class="btn_account" style="color:#FFF;">{% include "scm-attribute-edit-account-link" %}</div>
+                <div class="btn_account">{% include "scm-attribute-edit-account-link" %}</div>
 
                 <div id="RecoverPasswordForm" >
                   <br/>
@@ -219,157 +219,162 @@
                 </div>  </div>  </div>
 
           </li>            
-          
+
           <li class="sky-tab-content-4">
             <div class="typography">
               <h1>PAYMENT</h1>
               <p>Here is the credit card information that we have on file. If you would like to change your payment, please select edit payment. If you need support, please contact our customer service at 719-470-6046.<br/><br/>
-             
-                <div class="clearfix large_form ca-attr ca-account">
 
-                  {% assign metafields = customer.metafields %}
-                  
-                  {% assign last_four = metafields.customer_attribute['last-four'] %}
-                  {% assign exp_month = metafields.customer_attribute['expiration-month'] %}
-                  {% assign exp_year = metafields.customer_attribute['expiration-year'] %}
-                  {% assign credit_card_provider = metafields.customer_attribute['credit-card-provider'] %}
-                  
-                  {% assign stripe_token = metafields.customer_attribute['stripe-token'] %}
-                  {% assign stripe_customer = metafields.customer_attribute['stripe-customer'] %}
-                  <div id='card-info'>{% if credit_card_provider contains 'American' %}<i class="fa fa-cc-amex"></i>{% else %}<i class="fa fa-cc-{{ credit_card_provider | downcase }}"></i>{% endif %} **** **** **** <span>{{ last_four }}</span> EXP: <span>{{ exp_month }}/{{ exp_year }}</span></div>
+              <div class="clearfix large_form ca-attr ca-account">
 
-                  <div class="btn_account" style="color:#FFF;">
-                      <a class="ca-account" href="/account?view=edit-payment">Edit Payment</a>
-                  </div>
-                  
-				</div>
+                {% assign metafields = customer.metafields %}
+
+                {% assign last_four = metafields.customer_attribute['last-four'] %}
+                {% assign exp_month = metafields.customer_attribute['expiration-month'] %}
+                {% assign exp_year = metafields.customer_attribute['expiration-year'] %}
+                {% assign credit_card_provider = metafields.customer_attribute['credit-card-provider'] %}
+
+                {% assign stripe_token = metafields.customer_attribute['stripe-token'] %}
+                {% assign stripe_customer = metafields.customer_attribute['stripe-customer'] %}
+                <div id='card-info'>{% if credit_card_provider contains 'American' %}<i class="fa fa-cc-amex"></i>{% else %}<i class="fa fa-cc-{{ credit_card_provider | downcase }}"></i>{% endif %} **** **** **** <span>{{ last_four }}</span> EXP: <span>{{ exp_month }}/{{ exp_year }}</span></div>
+
+                <div class="btn_account" style="color:#FFF;">
+                  <a class="ca-account" href="/account?view=edit-payment">Edit Payment</a>
+                </div>
+
+              </div>
             </div>
           </li>	
 
           <li class="sky-tab-content-5">
             <div class="typography">
-              <h1>DIETARY NOTES</h1>
+              <h1>Dietary Preference</h1>
+              <p>Please select your dietary preference below so we know which meal to send you in the case that you don't place a custom order.</p>
+              <!--               <form action="//secomapp.com/customer_attribute/api/account" method="post">
+<input type="hidden" name="id" value="{{customer.id}}">
+<input type="hidden" name="shop" value="tillivery.myshopify.com">
 
-              <p>Mark the items below that you CAN eat. If you receive the Chef's Choice, we will try to keep your dietary restrictions in mind.</p>
-              <p style="height:10px;"></p>
-              <form action="//secomapp.com/customer_attribute/api/account" method="post">
-                <input type="hidden" name="id" value="{{customer.id}}">
-                <input type="hidden" name="shop" value="tillivery.myshopify.com">
+<div class="form-vertical">
+<div class="clearfix large_form ca-attr ca-account">
+<label class="ca-label ca-multiselect-label label" for="foods-you-can-eat"></label>
+<div class="ca-value ca-multiselect text">
+<section>
+<div class="ca-checkbox ca-inline">
+<img onclick="jQuery(this).parent().find('input').click();" src="">
 
-                <div class="form-vertical">
-                  <div class="clearfix large_form ca-attr ca-account">
-                    <label class="ca-label ca-multiselect-label label" for="foods-you-can-eat"></label>
-                    <div class="ca-value ca-multiselect text">
-                      <section>
-                        <div class="ca-checkbox ca-inline">
-                          <img onclick="jQuery(this).parent().find('input').click();" src="">
-                          
-                          <div class="">
-                            {% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
-                            {% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
-                            {% if attribute_values contains ',Beef' or attribute_values contains 'Beef,' or attribute_values == 'Beef' %}
-                            {% assign attribute_value = 'checked' %}
-                            {% else %}
-                            {% assign attribute_value = '' %}
-                            {% endif %}
-                            {% else %}
-                            {% assign attribute_value = "" %}
-                            {% endunless %}
-                            <input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Beef"
-                                   data-value="Beef" {{attribute_value}}
+<div class="">
+{% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
+{% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
+{% if attribute_values contains ',Beef' or attribute_values contains 'Beef,' or attribute_values == 'Beef' %}
+{% assign attribute_value = 'checked' %}
+{% else %}
+{% assign attribute_value = '' %}
+{% endif %}
+{% else %}
+{% assign attribute_value = "" %}
+{% endunless %}
+<input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Beef"
+data-value="Beef" {{attribute_value}}
 
-                                   id="foods-you-can-eat">
-                            <label>Beef</label>
-                          </div>
-                        </div>
-                        <div class="ca-checkbox ca-inline">
-                          <img onclick="jQuery(this).parent().find('input').click();" src="">
-                          <div class="">
-                            {% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
-                            {% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
-                            {% if attribute_values contains ',Poultry' or attribute_values contains 'Poultry,' or attribute_values == 'Poultry' %}
-                            {% assign attribute_value = 'checked' %}
-                            {% else %}
-                            {% assign attribute_value = '' %}
-                            {% endif %}
-                            {% else %}
-                            {% assign attribute_value = "" %}
-                            {% endunless %}
-                            <input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Poultry"
-                                   data-value="Poultry" {{attribute_value}}
+id="foods-you-can-eat">
+<label>Beef</label>
+</div>
+</div>
+<div class="ca-checkbox ca-inline">
+<img onclick="jQuery(this).parent().find('input').click();" src="">
+<div class="">
+{% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
+{% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
+{% if attribute_values contains ',Poultry' or attribute_values contains 'Poultry,' or attribute_values == 'Poultry' %}
+{% assign attribute_value = 'checked' %}
+{% else %}
+{% assign attribute_value = '' %}
+{% endif %}
+{% else %}
+{% assign attribute_value = "" %}
+{% endunless %}
+<input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Poultry"
+data-value="Poultry" {{attribute_value}}
 
-                                   id="foods-you-can-eat">
-                            <label>Poultry</label>
-                          </div>
-                        </div>
-                        <div class="ca-checkbox ca-inline">
-                          <img onclick="jQuery(this).parent().find('input').click();" src="">
-                          <div class="">
-                            {% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
-                            {% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
-                            {% if attribute_values contains ',Fish' or attribute_values contains 'Fish,' or attribute_values == 'Fish' %}
-                            {% assign attribute_value = 'checked' %}
-                            {% else %}
-                            {% assign attribute_value = '' %}
-                            {% endif %}
-                            {% else %}
-                            {% assign attribute_value = "" %}
-                            {% endunless %}
-                            <input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Fish"
-                                   data-value="Fish" {{attribute_value}}
+id="foods-you-can-eat">
+<label>Poultry</label>
+</div>
+</div>
+<div class="ca-checkbox ca-inline">
+<img onclick="jQuery(this).parent().find('input').click();" src="">
+<div class="">
+{% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
+{% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
+{% if attribute_values contains ',Fish' or attribute_values contains 'Fish,' or attribute_values == 'Fish' %}
+{% assign attribute_value = 'checked' %}
+{% else %}
+{% assign attribute_value = '' %}
+{% endif %}
+{% else %}
+{% assign attribute_value = "" %}
+{% endunless %}
+<input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Fish"
+data-value="Fish" {{attribute_value}}
 
-                                   id="foods-you-can-eat">
-                            <label>Fish</label>
-                          </div>
-                        </div>
-                        <div class="ca-checkbox ca-inline">
-                          <img onclick="jQuery(this).parent().find('input').click();" src="">
-                          <div class="">
-                            {% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
-                            {% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
-                            {% if attribute_values contains ',Pork' or attribute_values contains 'Pork,' or attribute_values == 'Pork' %}
-                            {% assign attribute_value = 'checked' %}
-                            {% else %}
-                            {% assign attribute_value = '' %}
-                            {% endif %}
-                            {% else %}
-                            {% assign attribute_value = "" %}
-                            {% endunless %}
-                            <input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Pork"
-                                   data-value="Pork" {{attribute_value}}
+id="foods-you-can-eat">
+<label>Fish</label>
+</div>
+</div>
+<div class="ca-checkbox ca-inline">
+<img onclick="jQuery(this).parent().find('input').click();" src="">
+<div class="">
+{% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
+{% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
+{% if attribute_values contains ',Pork' or attribute_values contains 'Pork,' or attribute_values == 'Pork' %}
+{% assign attribute_value = 'checked' %}
+{% else %}
+{% assign attribute_value = '' %}
+{% endif %}
+{% else %}
+{% assign attribute_value = "" %}
+{% endunless %}
+<input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Pork"
+data-value="Pork" {{attribute_value}}
 
-                                   id="foods-you-can-eat">
-                            <label>Pork</label>
-                          </div>
-                        </div>
-                        <div class="ca-checkbox ca-inline">
-                          <img onclick="jQuery(this).parent().find('input').click();" src="">
-                          <div class="">
-                            {% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
-                            {% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
-                            {% if attribute_values contains ',Nuts' or attribute_values contains 'Nuts,' or attribute_values == 'Nuts' %}
-                            {% assign attribute_value = 'checked' %}
-                            {% else %}
-                            {% assign attribute_value = '' %}
-                            {% endif %}
-                            {% else %}
-                            {% assign attribute_value = "" %}
-                            {% endunless %}
-                            <input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Nuts"
-                                   data-value="Nuts" {{attribute_value}}
+id="foods-you-can-eat">
+<label>Pork</label>
+</div>
+</div>
+<div class="ca-checkbox ca-inline">
+<img onclick="jQuery(this).parent().find('input').click();" src="">
+<div class="">
+{% unless customer.metafields.customer_attribute['foods-you-can-eat'] == empty %}
+{% assign attribute_values = customer.metafields.customer_attribute['foods-you-can-eat'] %}
+{% if attribute_values contains ',Nuts' or attribute_values contains 'Nuts,' or attribute_values == 'Nuts' %}
+{% assign attribute_value = 'checked' %}
+{% else %}
+{% assign attribute_value = '' %}
+{% endif %}
+{% else %}
+{% assign attribute_value = "" %}
+{% endunless %}
+<input class="ca-option" type="checkbox" name="foods-you-can-eat[]" value="Nuts"
+data-value="Nuts" {{attribute_value}}
 
-                                   id="foods-you-can-eat">
-                            <label>Nuts</label>
-                          </div>
-                        </div>
-                      </section>
-                    </div>                        </div>
-                  <p class="btn_account" style="height:30px;">
-                    <input class="btn" type="submit" value="Update" />
-                  </p>
+id="foods-you-can-eat">
+<label>Nuts</label>
+</div>
+</div>
+</section>
+</div>                        </div>
+<p class="btn_account" style="height:30px;">
+<input class="btn" type="submit" value="Update" />
+</p>
 
-                </div>
-              </form>          
+</div>
+</form>           -->
+
+              <form>
+                <input type="radio" name='dietary-preference' value="47936985740">No Preference
+                <input type="radio" name='dietary-preference' value="47934480652">Vegetarian
+                <input type="radio" name='dietary-preference' value="47934480652">Vegan
+                <input type="radio" name='dietary-preference' value="47936634124">Gluten Free
+              </form>
 
             </div>
 
@@ -415,9 +420,8 @@
             });
           }, 2000);
         }
-      });      	
+      });       
       });
-
       $('#skipped').on('click', function() {
         $(this).prop("disabled",true);
         $.ajax({
@@ -427,43 +431,64 @@
             $('#skipped').addClass('skip__success');
             setTimeout(function(){
             $('#skipped-wrapper').fadeOut(1000, function() {
-          	$('#skipped-wrapper a').removeClass('skip__success')
+            $('#skipped-wrapper a').removeClass('skip__success')
             $('#skip-wrapper').fadeIn(750);
               });
             }, 1000);
           }
-        });      	
+        });       
       });       
+    </script>    
+
+    <script>
+      $("input[name='dietary-preference']").change( function(){
+  		
+        var formData = {
+          'shopify_customer_id': {{customer.id}},
+          'dietary_preference': $(this).val()
+        };
+        
+        console.log(formData);
+        
+        $.ajax({
+          url: 'https://subscribery.herokuapp.com/api/shopifycustomer/diet',
+          type: 'post',
+          data: formData,
+          success: function(){
+            		
+      	  }
+        }); 
+        
+      });
     </script>
 
 
-
-<!--     <script>
-      function setDates() {
-        var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        var curr = new Date();
-        var wedsDate = new Date();
-        var prevWeds = new Date();
-        var prevTues = new Date();
-        var nextWeds = new Date();
-        var nextTues = new Date();
-        var nextnextWeds = new Date();
-        var nextnextTues = new Date();
-        var wednesday = 3 - curr.getDay();
-        wedsDate.setDate(wedsDate.getDate()+wednesday);
-        prevWeds.setDate(wedsDate.getDate() - 7);
-        prevTues.setDate(wedsDate.getDate() - 8);
-        nextWeds.setDate(wedsDate.getDate() + 7);
-        nextTues.setDate(wedsDate.getDate() + 6);
-        nextnextWeds.setDate(wedsDate.getDate() + 14);
-        nextnextTues.setDate(wedsDate.getDate() + 13);        
-        var month = (monthNames[wedsDate.getMonth()]);
-        var day = wedsDate.getDate().toString();
-        var orderDay = month + ' ' + day;
-        console.log(prevTues);
-        $('#prevOrderDate').text(prevWeds);
-      }
-      $(function() {
-        setDates();
-      });
-    </script> -->
+    <!--     <script>
+function setDates() {
+var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var curr = new Date();
+var wedsDate = new Date();
+var prevWeds = new Date();
+var prevTues = new Date();
+var nextWeds = new Date();
+var nextTues = new Date();
+var nextnextWeds = new Date();
+var nextnextTues = new Date();
+var wednesday = 3 - curr.getDay();
+wedsDate.setDate(wedsDate.getDate()+wednesday);
+prevWeds.setDate(wedsDate.getDate() - 7);
+prevTues.setDate(wedsDate.getDate() - 8);
+nextWeds.setDate(wedsDate.getDate() + 7);
+nextTues.setDate(wedsDate.getDate() + 6);
+nextnextWeds.setDate(wedsDate.getDate() + 14);
+nextnextTues.setDate(wedsDate.getDate() + 13);        
+var month = (monthNames[wedsDate.getMonth()]);
+var day = wedsDate.getDate().toString();
+var orderDay = month + ' ' + day;
+console.log(prevTues);
+$('#prevOrderDate').text(prevWeds);
+}
+$(function() {
+setDates();
+});
+</script> -->
